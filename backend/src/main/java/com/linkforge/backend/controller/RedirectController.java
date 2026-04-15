@@ -22,7 +22,7 @@ import java.net.URI;
             this.linkService = linkService;
         }
 
-        @GetMapping("/{shortCode}")
+        @GetMapping("/api/{shortCode}")
         public ResponseEntity<?> redirect(
                 @PathVariable String shortCode,
                 @RequestParam(required = false) String password) {
