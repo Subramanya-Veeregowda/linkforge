@@ -10,6 +10,7 @@ export default function LinkForm() {
   const [error,setError] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const API =  import.meta.env.VITE_API_BASE_URL;
 
 
 useEffect(() => {
@@ -17,8 +18,7 @@ useEffect(() => {
   const savedAlias = localStorage.getItem("alias");
   const savedExpiry = localStorage.getItem("expiry");
   const savedShort = localStorage.getItem("shortUrl");
-
-
+  
   if (savedUrl) setUrl(savedUrl);
   if (savedAlias) setAlias(savedAlias);
   if (savedExpiry) setExpiry(savedExpiry);
@@ -30,9 +30,10 @@ const handleSubmit = async () => {
   setLoading(true);
 
   console.log("Expiry date:" , expiry)
+  console.log("API URL:", API);
 
   try {
-    const res = await fetch("http://localhost:8080/api/links", {
+    const res = await fetch(`${API}/api/links`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
