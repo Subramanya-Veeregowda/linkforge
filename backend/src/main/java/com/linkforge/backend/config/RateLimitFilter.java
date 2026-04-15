@@ -22,7 +22,7 @@ public class RateLimitFilter implements Filter {
         } else {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setStatus(429);
-            httpResponse.getWriter().write("Too many requests");
+            httpResponse.getWriter().write("Too many requests");  // our rate limiter 🔥
         }
     }
 }
