@@ -43,7 +43,7 @@ export default function Navbar({ dark, setDark, isLoggedIn }) {
         {/* THEME TOGGLE */}
         <button
           onClick={() => setDark(!dark)}
-          className="border px-2 py-1 rounded-lg text-black dark:text-white hover:bg-gray-300 hover:dark:bg-gray-600 hover:scale-[1.1] transition duration-300 ease-in-out"
+          className="border px-2 py-1 rounded-lg text-black dark:text-white hover:bg-gray-300 hover:dark:bg-gray-700 hover:scale-[1.1] transition duration-300 ease-in-out"
         >
           {dark ? <Sun size={16} /> : <Moon size={16} />}
         </button>
