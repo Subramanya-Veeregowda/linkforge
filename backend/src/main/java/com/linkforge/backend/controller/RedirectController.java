@@ -54,13 +54,13 @@ import java.util.Map;
 
             }catch (ResponseStatusException e) {
 
-                if (e.getStatusCode() == HttpStatus.GONE) { // 🔥 expired
+                if (e.getStatusCode() == HttpStatus.GONE) { // when link is 🔥 expired
                     return ResponseEntity.status(HttpStatus.FOUND)
                             .location(URI.create("http://localhost:5173/unlock/" + shortCode + "?expired=true"))
                             .build();
                 }
 
-                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) { // 🔥 wrong password
+                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) { // when user enters 🔥 wrong password
                     return ResponseEntity.status(HttpStatus.FOUND)
                             .location(URI.create("http://localhost:5173/unlock/" + shortCode + "?error=invalid"))
                             .build();
