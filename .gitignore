@@ -103,6 +103,7 @@ frontend/dist/
 
 # Env (VERY IMPORTANT 🔐)
 .env
+application-local.properties
 
 
 # OS files
