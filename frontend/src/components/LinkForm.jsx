@@ -81,7 +81,7 @@ const handleSubmit = async () => {
 };
 
   return (
-    <div className="w-full px-4 sm:px-6">
+    <div className="w-full px-4 sm:px-6"> {/**added responsiveness for mobile */}
     <div className="max-w-xl mx-auto mt-3 rounded-xl backdrop-blur bg-white/80 dark:bg-blue-400/30 border border-white/20 shadow-xl p-4 sm:p-6">
 
       {/* URL INPUT */}
