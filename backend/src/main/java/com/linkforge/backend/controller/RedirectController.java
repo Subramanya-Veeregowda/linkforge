@@ -2,19 +2,21 @@ package com.linkforge.backend.controller;
 
 import com.linkforge.backend.model.Link;
 import com.linkforge.backend.service.LinkService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
-import java.util.Map;
 
-@CrossOrigin(origins = "https://linkforge-frontend.vercel.app")
 @RestController
     public class RedirectController {
 
         private final LinkService linkService;
+
+        @Value("${frontend.url}")
+        private String frontendUrl;
 
         public RedirectController(LinkService linkService) {
             this.linkService = linkService;
@@ -32,7 +34,7 @@ import java.util.Map;
                 // 🔒 If password exists but NOT provided → go to unlock page
                 if (linkService.isProtected(link) && (password==null || password.isEmpty())) {
                     return ResponseEntity.status(HttpStatus.FOUND)
-                            .location(URI.create("https://linkforge-frontend.vercel.app/unlock/" + shortCode))
+                            .location(URI.create(frontendUrl + "/unlock/" + shortCode))
                             .build();
                 }
 
@@ -56,13 +58,13 @@ import java.util.Map;
 
                 if (e.getStatusCode() == HttpStatus.GONE) { // when link is 🔥 expired
                     return ResponseEntity.status(HttpStatus.FOUND)
-                            .location(URI.create("https://linkforge-frontend.vercel.app/unlock/" + shortCode + "?expired=true"))
+                            .location(URI.create(frontendUrl + "/unlock/" + shortCode + "?expired=true"))
                             .build();
                 }
 
                 if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) { // when user enters 🔥 wrong password
                     return ResponseEntity.status(HttpStatus.FOUND)
-                            .location(URI.create("https://linkforge-frontend.vercel.app/unlock/" + shortCode + "?error=invalid"))
+                            .location(URI.create(frontendUrl + "/unlock/" + shortCode + "?error=invalid"))
                             .build();
                 }
 
