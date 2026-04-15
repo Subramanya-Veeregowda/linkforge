@@ -4,6 +4,7 @@ import com.linkforge.backend.dto.CreateLinkRequest;
 import com.linkforge.backend.dto.LinkStatusResponse;
 import com.linkforge.backend.model.Link;
 import com.linkforge.backend.repository.LinkRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +26,12 @@ public class LinkService {
 
     private final BCryptPasswordEncoder encoder;
 
-    //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @PostConstruct
+    public void validateBaseUrl() {
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            throw new IllegalStateException("APP_BASE_URL is not configured");
+        }
+    }
 
     public boolean isProtected(Link link) {
         return link.getPasswordHash() != null && !link.getPasswordHash().isEmpty();
