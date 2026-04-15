@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.util.Map;
 
-@CrossOrigin(origins = "https://localhost:5173")
+@CrossOrigin(origins = "https://linkforge-frontend.vercel.app")
 @RestController
     public class RedirectController {
 
@@ -32,7 +32,7 @@ import java.util.Map;
                 // 🔒 If password exists but NOT provided → go to unlock page
                 if (linkService.isProtected(link) && (password==null || password.isEmpty())) {
                     return ResponseEntity.status(HttpStatus.FOUND)
-                            .location(URI.create("http://localhost:5173/unlock/" + shortCode))
+                            .location(URI.create("https://linkforge-frontend.vercel.app/unlock/" + shortCode))
                             .build();
                 }
 
@@ -56,13 +56,13 @@ import java.util.Map;
 
                 if (e.getStatusCode() == HttpStatus.GONE) { // when link is 🔥 expired
                     return ResponseEntity.status(HttpStatus.FOUND)
-                            .location(URI.create("http://localhost:5173/unlock/" + shortCode + "?expired=true"))
+                            .location(URI.create("https://linkforge-frontend.vercel.app/unlock/" + shortCode + "?expired=true"))
                             .build();
                 }
 
                 if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) { // when user enters 🔥 wrong password
                     return ResponseEntity.status(HttpStatus.FOUND)
-                            .location(URI.create("http://localhost:5173/unlock/" + shortCode + "?error=invalid"))
+                            .location(URI.create("https://linkforge-frontend.vercel.app/unlock/" + shortCode + "?error=invalid"))
                             .build();
                 }
 
