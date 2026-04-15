@@ -35,7 +35,7 @@ export default function Navbar({ dark, setDark, isLoggedIn }) {
         </button>
 
         {/* LOGIN / LOGOUT */}
-        <button title="Coming Soon 🚀" className="flex items-center gap-2 border px-3 py-1 rounded-lg text-sm dark:text-white">
+        <button title="Coming Soon! 🚀" className="flex items-center gap-2 border px-3 py-1 rounded-lg text-sm dark:text-white">
           {isLoggedIn ? <LogOut size={16} /> : <LogIn size={16} />}
           {isLoggedIn ? "Logout" : "Login"}
         </button>
