@@ -30,13 +30,13 @@ import java.util.Map;
                 Link link = linkService.getLink(shortCode);
 
                 // 🔒 If password exists but NOT provided → go to unlock page
-                if (linkService.isProtected(link) && (password == null || password.isEmpty())) {
+                if (linkService.isProtected(link) && (password==null || password.isEmpty())) {
                     return ResponseEntity.status(HttpStatus.FOUND)
                             .location(URI.create("http://localhost:5173/unlock/" + shortCode))
                             .build();
                 }
 
-                // 🔐 If password exists AND provided → verify + redirect
+                // 🔐 If password exists AND provided it verify + redirect
                 if (link.getPasswordHash() != null && password != null && !password.isEmpty()) {
 
                     String originalUrl = linkService.getOriginalUrl(shortCode, password);
