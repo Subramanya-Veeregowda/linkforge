@@ -10,10 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @Service
@@ -25,6 +25,8 @@ public class LinkService {
     private final LinkRepository linkRepository;
 
     private final BCryptPasswordEncoder encoder;
+
+    private static final Logger log = LoggerFactory.getLogger(LinkService.class);
 
     @PostConstruct
     public void validateBaseUrl() {
@@ -115,10 +117,7 @@ public class LinkService {
     public String getOriginalUrl(String shortCode, String password) {
 
         Link link = linkRepository.findByShortCode(shortCode)
-                .orElseThrow(() -> new RuntimeException("Link not found"));
-
-        System.out.println("Saved password hash:" + link.getPasswordHash());
-        System.out.println("Saved password hash:" + password);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Link not found"));
 
         if(link.getPasswordHash() != null) {
 
