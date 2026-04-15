@@ -29,6 +29,7 @@ public class QRService {
                 image.setRGB(x, y, matrix.get(x, y) ? 0x000000 : 0xFFFFFF);
             }
         }
+        // formats the image size
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ImageIO.write(image, "PNG", output);
