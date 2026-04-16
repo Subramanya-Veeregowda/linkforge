@@ -13,6 +13,8 @@ function UnlockPage() {
   const [expired, setExpired] = useState(false);
   const [searchParams] = useSearchParams();
 
+  const API = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     if(searchParams.get("error") === "invalid"){
       setError("Invalid password");
@@ -26,7 +28,7 @@ function UnlockPage() {
 const handleUnlock = (e) => {
   e.preventDefault();
 
-  const url = `http://localhost:8080/${shortCode}?password=${password}`;
+  const url = `${API}/api/${shortCode}?password=${password}`;
 
   // 🔥 let backend handle everything
   window.location.href = url;

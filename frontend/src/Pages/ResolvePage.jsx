@@ -11,35 +11,31 @@ function ResolvePage() {
 
   const password = searchParams.get("password");
 
+  const API = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     if (!shortCode) return;
 
 const resolve = async () => {
   try {
-    const res = await fetch(
-      `http://localhost:8080/${shortCode}?password=${password || ""}`
-    );
+      const res = await fetch(
+           `${API}/api/${shortCode}?password=${password || ""}`,
+          { redirect: "manual" }
+      );
 
-    // ❌ invalid password
-    if (res.status === 401) {
-      navigate(`/unlock/${shortCode}?error=invalid`);
-      return;
-    }
-
-    // ⏰ expired
-    if (res.status === 410) {
-      navigate("/expired");
-      return;
-    }
+    console.log("STATUS:", res.status);
+    console.log("LOCATION:", res.headers.get("Location"));
 
     // 🔐 needs password (redirect from backend)
-    if (res.redirected && res.url.includes("/unlock")) {
-      navigate(`/unlock/${shortCode}`);
-      return;
-    }
+if (res.status === 302) {
+  const location = res.headers.get("Location");
 
-    // ✅ success → backend gives redirect URL
-    window.location.href = res.url;
+  if (location) {
+       window.location.href = location;
+  }
+  return;
+}
+
 
   } catch (err) {
     console.error("Resolve error:", err);
@@ -60,7 +56,7 @@ const resolve = async () => {
     <div className="h-screen flex items-center justify-center text-gray-400">
       Redirecting...
     </div>
-         </>
+    </>
   );
 }
 
