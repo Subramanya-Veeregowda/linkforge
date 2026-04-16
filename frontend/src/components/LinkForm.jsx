@@ -179,7 +179,7 @@ const handleSubmit = async () => {
           {/* Visit */}
           <a
             title="visit"
-            href={shortUrl}
+            href={`${API}/api/${shortUrl.split("/").pop()}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-green-500 px-3 py-1 rounded text-white  hover:bg-green-900 hover:scale-[1.03] transition duration-300 ease-in-out"

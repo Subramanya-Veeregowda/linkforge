@@ -7,18 +7,37 @@ export default function QRCodePage() {
   const [data, setData] = useState(null);
   const [showQR, setShowQR] = useState(true);
   const { shortCode } = useParams();
+const API = import.meta.env.VITE_API_BASE_URL;
 
-  useEffect(() => {
-    fetch(`http://localhost:8080/api/qr/details/${shortCode}`)
-      .then(res => res.json())
-      .then(setData);
-  }, [shortCode]);
+useEffect(() => {
+  const fetchQR = async () => {
+    try {
+      const res = await fetch(`${API}/api/qr/details/${shortCode}`);
+      const data = await res.json();
+      setData(data);
+    } catch {
+      setData("error");
+    }
+  };
 
-  if (!data) return (
+  fetchQR();
+}, [shortCode]);
+
+  if (data === null) return (
     <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-lg"> Generating your Quick response Code...</div>
     </div>
   )
+
+  if (data === "error") {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-red-500 text-lg">
+        Invalid or protected link
+      </div>
+    </div>
+  );
+}
 
   const imageSrc = `data:image/png;base64,${data.qrImage}`;
 
