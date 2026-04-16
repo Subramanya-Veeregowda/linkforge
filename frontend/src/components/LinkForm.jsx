@@ -56,7 +56,6 @@ const handleSubmit = async () => {
     }
 
      console.log("response data:", data);
-     setShortUrl(data.shortUrl);
 
     // ❌ ERROR CASE
     if (!res.ok) {
@@ -74,7 +73,8 @@ const handleSubmit = async () => {
     // ✅ SUCCESS
     if (data?.shortUrl) {
       const shortCode = data.shortUrl.split("/").pop();
-      setShortUrl(data.shortUrl);
+      const finalUrl = `${API}/api/${shortCode}`;
+      setShortUrl(finalUrl);
     } else {
       setError("No short URL returned from server");
     }

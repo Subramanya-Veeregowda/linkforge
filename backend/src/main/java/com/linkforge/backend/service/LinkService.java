@@ -92,7 +92,7 @@ public class LinkService {
 
         linkRepository.save(link);
 
-        return baseUrl + "/" + shortCode;
+        return baseUrl + "/api/" + shortCode;
     }
 
     private boolean isValidUrl(String url) {
