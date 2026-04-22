@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
-import java.util.Map;
 
 @RestController
 public class RedirectController {
@@ -31,27 +30,44 @@ public class RedirectController {
             @RequestParam(required = false) String password,
             HttpServletRequest request) {
 
+        String referer = request.getHeader("Referer");
+        String currentFrontendUrl = (referer != null) ? extractBaseUrl(referer) : fallbackFrontendUrl;
+
         try {
             Link link = linkService.getLink(shortCode);
 
-            // Check expiry first
+            // 🔥 CHANGE 1: Move Expiry Check to the VERY TOP
+            // Check if link is expired (compare current time with link.getExpiryTime())
             if (link.getExpiryTime() != null && link.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
-                return ResponseEntity.ok(Map.of("status", "EXPIRED"));
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"))
+                        .build();
             }
 
-            // Verify password
-            String originalUrl = linkService.getOriginalUrl(shortCode, password);
+            // 2. Check if it needs a password but none was sent
+            if (linkService.isProtected(link) && (password == null || password.isEmpty())) {
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode))
+                        .build();
+            }
 
-            // Return JSON instead of a 302 Redirect
-            return ResponseEntity.ok(Map.of("status", "SUCCESS", "url", originalUrl));
+            // 3. Verify password and redirect
+            String originalUrl = linkService.getOriginalUrl(shortCode, password);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(originalUrl))
+                    .build();
 
         } catch (ResponseStatusException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "INVALID_PASSWORD"));
-            }
-            // Handle GONE (Expired) status here too
+            // Handle specific errors thrown by LinkService
             if (e.getStatusCode() == HttpStatus.GONE) {
-                return ResponseEntity.ok(Map.of("status", "EXPIRED"));
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"))
+                        .build();
+            }
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?error=invalid"))
+                        .build();
             }
             throw e;
         }
