@@ -30,24 +30,27 @@ const handleUnlock = async (e) => {
   setError("");
 
   try {
-    // 1. Fetch the data instead of just changing window.location
-    const response = await fetch(`${API}/api/${shortCode}?password=${password}`);
-    
-    // 2. Parse the JSON result from the backend
-    const data = await response.json();
+    // We use fetch with redirect: "manual" to stop the browser from jumping away
+    const res = await fetch(`${API}/api/${shortCode}?password=${password}`, {
+      redirect: "manual" 
+    });
 
-    if (data.status === "SUCCESS") {
-      // 3. If valid, redirect to the actual original link
-      window.location.href = data.url; 
-    } else if (data.status === "EXPIRED") {
-      // 4. If expired, show the popup
-      setExpired(true);
-    } else if (data.status === "INVALID_PASSWORD") {
-      setError("Invalid password. Please try again.");
+    // If backend says 302, it's trying to redirect us
+    if (res.status === 302 || res.status === 301) {
+      const targetUrl = res.headers.get("Location");
+
+      // Check if the target URL contains "expired=true"
+      if (targetUrl && targetUrl.includes("expired=true")) {
+        setExpired(true); // This shows your ExpiredPopup.jsx
+      } else {
+        // If not expired, then it's the real destination, so go there
+        window.location.href = targetUrl;
+      }
+    } else if (res.status === 401) {
+      setError("Invalid password");
     }
   } catch (err) {
-    console.error("Unlock error:", err);
-    setError("Something went wrong. Please check your connection.");
+    setError("Something went wrong. Please try again.");
   }
 };
 
