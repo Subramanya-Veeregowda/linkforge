@@ -25,13 +25,30 @@ function UnlockPage() {
     }
   },[]);
 
-const handleUnlock = (e) => {
+const handleUnlock = async (e) => {
   e.preventDefault();
+  setError("");
 
-  const url = `${API}/api/${shortCode}?password=${password}`;
+  try {
+    const res = await fetch(`${API}/api/${shortCode}?password=${password}`);
+    const data = await res.json();
 
-  // 🔥 let backend handle everything
-  window.location.href = url;
+    if (data.status === "SUCCESS") {
+      // Success! Go to the destination
+      window.location.href = data.url;
+    } else if (data.status === "EXPIRED") {
+      // Link is expired
+      setExpired(true);
+    } else if (data.status === "INVALID_PASSWORD") {
+      // Wrong password
+      setError("Invalid password. Please try again.");
+    } else {
+      setError("An unexpected error occurred.");
+    }
+  } catch (err) {
+    console.error("Unlock error:", err);
+    setError("Failed to connect to the server.");
+  }
 };
 
   // Show expired UI
