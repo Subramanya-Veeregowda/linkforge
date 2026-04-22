@@ -25,33 +25,13 @@ function UnlockPage() {
     }
   },[]);
 
-const handleUnlock = async (e) => {
+const handleUnlock = (e) => {
   e.preventDefault();
-  setError("");
 
-  try {
-    // We use fetch with redirect: "manual" to stop the browser from jumping away
-    const res = await fetch(`${API}/api/${shortCode}?password=${password}`, {
-      redirect: "manual" 
-    });
+  const url = `${API}/api/${shortCode}?password=${password}`;
 
-    // If backend says 302, it's trying to redirect us
-    if (res.status === 302 || res.status === 301) {
-      const targetUrl = res.headers.get("Location");
-
-      // Check if the target URL contains "expired=true"
-      if (targetUrl && targetUrl.includes("expired=true")) {
-        setExpired(true); // This shows your ExpiredPopup.jsx
-      } else {
-        // If not expired, then it's the real destination, so go there
-        window.location.href = targetUrl;
-      }
-    } else if (res.status === 401) {
-      setError("Invalid password");
-    }
-  } catch (err) {
-    setError("Something went wrong. Please try again.");
-  }
+  // 🔥 let backend handle everything
+  window.location.href = url;
 };
 
   // Show expired UI
