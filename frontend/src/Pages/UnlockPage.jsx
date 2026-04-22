@@ -30,24 +30,24 @@ const handleUnlock = async (e) => {
   setError("");
 
   try {
-    const res = await fetch(`${API}/api/${shortCode}?password=${password}`);
-    const data = await res.json();
+    // 1. Fetch the data instead of just changing window.location
+    const response = await fetch(`${API}/api/${shortCode}?password=${password}`);
+    
+    // 2. Parse the JSON result from the backend
+    const data = await response.json();
 
     if (data.status === "SUCCESS") {
-      // Success! Go to the destination
-      window.location.href = data.url;
+      // 3. If valid, redirect to the actual original link
+      window.location.href = data.url; 
     } else if (data.status === "EXPIRED") {
-      // Link is expired
+      // 4. If expired, show the popup
       setExpired(true);
     } else if (data.status === "INVALID_PASSWORD") {
-      // Wrong password
       setError("Invalid password. Please try again.");
-    } else {
-      setError("An unexpected error occurred.");
     }
   } catch (err) {
     console.error("Unlock error:", err);
-    setError("Failed to connect to the server.");
+    setError("Something went wrong. Please check your connection.");
   }
 };
 

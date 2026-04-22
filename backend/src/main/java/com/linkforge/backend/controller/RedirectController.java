@@ -31,34 +31,29 @@ public class RedirectController {
             @RequestParam(required = false) String password,
             HttpServletRequest request) {
 
-        String referer = request.getHeader("Referer");
-        String currentFrontendUrl = (referer != null) ? extractBaseUrl(referer) : fallbackFrontendUrl;
-
         try {
             Link link = linkService.getLink(shortCode);
 
-            // 1. Check Expiry
+            // Check expiry first
             if (link.getExpiryTime() != null && link.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
-                return ResponseEntity.ok(Map.of("status", "EXPIRED", "url", currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"));
+                return ResponseEntity.ok(Map.of("status", "EXPIRED"));
             }
 
-            // 2. Check if password is needed but missing
-            if (linkService.isProtected(link) && (password == null || password.isEmpty())) {
-                return ResponseEntity.ok(Map.of("status", "NEEDS_PASSWORD"));
-            }
-
-            // 3. Verify password and get original URL
+            // Verify password
             String originalUrl = linkService.getOriginalUrl(shortCode, password);
+
+            // Return JSON instead of a 302 Redirect
             return ResponseEntity.ok(Map.of("status", "SUCCESS", "url", originalUrl));
 
         } catch (ResponseStatusException e) {
-            if (e.getStatusCode() == HttpStatus.GONE) {
-                return ResponseEntity.ok(Map.of("status", "EXPIRED"));
-            }
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "INVALID_PASSWORD"));
             }
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("status", "ERROR"));
+            // Handle GONE (Expired) status here too
+            if (e.getStatusCode() == HttpStatus.GONE) {
+                return ResponseEntity.ok(Map.of("status", "EXPIRED"));
+            }
+            throw e;
         }
     }
 
