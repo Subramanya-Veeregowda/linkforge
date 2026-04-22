@@ -28,29 +28,37 @@ public class RedirectController {
     public ResponseEntity<?> redirect(
             @PathVariable String shortCode,
             @RequestParam(required = false) String password,
-            HttpServletRequest request) { // Add HttpServletRequest here
+            HttpServletRequest request) {
 
-        // 1. Determine the dynamic Frontend URL
         String referer = request.getHeader("Referer");
         String currentFrontendUrl = (referer != null) ? extractBaseUrl(referer) : fallbackFrontendUrl;
 
         try {
             Link link = linkService.getLink(shortCode);
 
-            // 🔒 Redirect to Unlock Page
+            // 1. ALWAYS check expiry first (this should throw a GONE status if expired)
+            // If your service doesn't check expiry in getLink, call a specific check here.
+            if (link.getExpiryTime() != null && link.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"))
+                        .build();
+            }
+
+            // 2. Then check for password protection
             if (linkService.isProtected(link) && (password == null || password.isEmpty())) {
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode))
                         .build();
             }
 
-            // 🔐 Verify + Redirect to Original Destination
+            // 3. Finally, verify password and get original URL
             String originalUrl = linkService.getOriginalUrl(shortCode, password);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create(originalUrl))
                     .build();
 
         } catch (ResponseStatusException e) {
+            // This catch block handles cases where linkService.getOriginalUrl throws errors
             if (e.getStatusCode() == HttpStatus.GONE) {
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"))
