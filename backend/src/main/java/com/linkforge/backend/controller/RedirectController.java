@@ -36,29 +36,29 @@ public class RedirectController {
         try {
             Link link = linkService.getLink(shortCode);
 
-            // 1. ALWAYS check expiry first (this should throw a GONE status if expired)
-            // If your service doesn't check expiry in getLink, call a specific check here.
+            // 🔥 CHANGE 1: Move Expiry Check to the VERY TOP
+            // Check if link is expired (compare current time with link.getExpiryTime())
             if (link.getExpiryTime() != null && link.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"))
                         .build();
             }
 
-            // 2. Then check for password protection
+            // 2. Check if it needs a password but none was sent
             if (linkService.isProtected(link) && (password == null || password.isEmpty())) {
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode))
                         .build();
             }
 
-            // 3. Finally, verify password and get original URL
+            // 3. Verify password and redirect
             String originalUrl = linkService.getOriginalUrl(shortCode, password);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create(originalUrl))
                     .build();
 
         } catch (ResponseStatusException e) {
-            // This catch block handles cases where linkService.getOriginalUrl throws errors
+            // Handle specific errors thrown by LinkService
             if (e.getStatusCode() == HttpStatus.GONE) {
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(URI.create(currentFrontendUrl + "/unlock/" + shortCode + "?expired=true"))
