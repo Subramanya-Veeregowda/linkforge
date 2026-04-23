@@ -24,13 +24,38 @@ function UnlockPage() {
     }
   },[]);
 
-const handleUnlock = (e) => {
-  e.preventDefault();
+const handleUnlock = async () => {
+  try {
+    const res = await fetch(`/api/${shortCode}`, {
+      method: "POST", // or GET with query param depending on backend
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password }),
+    });
 
-  const url = `${API}/api/${shortCode}?password=${password}`;
+    if (res.status === 401) {
+      setError("Wrong password");
+      return;
+    }
 
-  // 🔥 let backend handle everything
-  window.location.href = url;
+    if (res.status === 410) {
+      setExpired(true);
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error("Something went wrong");
+    }
+
+    const data = await res.text();
+
+    // redirect ONLY after success
+    window.location.href = data;
+
+  } catch (err) {
+    console.error(err);
+  }
 };
 
   // Show expired UI
