@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ExpiredPopup from "../components/ExpiredPopup";
-import Footer from "../components/Footer";
 import CustomFooter from "../components/CustomFooter";
 
 function UnlockPage() {

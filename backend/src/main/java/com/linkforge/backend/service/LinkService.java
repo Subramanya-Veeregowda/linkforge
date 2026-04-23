@@ -119,26 +119,25 @@ public class LinkService {
         Link link = linkRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Link not found"));
 
-        if(link.getPasswordHash() != null) {
-
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-            if(password == null || !encoder.matches(password, link.getPasswordHash())) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
-            }
-        }
-
+        // 1. Expiry FIRST
         if (link.getExpiryTime() != null &&
                 link.getExpiryTime().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.GONE, "Link expired!");
         }
 
-            link.setClickCount(link.getClickCount() + 1);
-
-            linkRepository.save(link);
-
-            return link.getOriginalUrl();
+        // 2. Password check
+        if (link.getPasswordHash() != null && !link.getPasswordHash().isEmpty()) {
+            if (password == null || !encoder.matches(password, link.getPasswordHash())) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+            }
         }
+
+        // 3. Increment clicks
+        link.setClickCount(link.getClickCount() + 1);
+        linkRepository.save(link);
+
+        return link.getOriginalUrl();
+    }
 
     public Link getLink(String shortCode) {
 
