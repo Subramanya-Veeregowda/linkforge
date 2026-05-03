@@ -5,6 +5,7 @@ import com.linkforge.backend.dto.LinkResponse;
 import com.linkforge.backend.dto.LinkStatusResponse;
 import com.linkforge.backend.dto.QRResponse;
 import com.linkforge.backend.model.Link;
+import com.linkforge.backend.repository.LinkRepository;
 import com.linkforge.backend.service.LinkService;
 import com.linkforge.backend.service.QRService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class LinkController {
 
     @Autowired
     private QRService qrService;
+
+    @Autowired
+    private LinkRepository linkRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -70,5 +74,15 @@ public class LinkController {
     @GetMapping("/status/{shortCode}")
     public ResponseEntity<LinkStatusResponse> getStatus(@PathVariable String shortCode) {
         return ResponseEntity.ok(linkService.getStatus(shortCode));
+    }
+
+    @GetMapping("/db-check")
+    public String checkDB() {
+        try {
+            long count = linkRepository.count();
+            return "DB OK, count = " + count;
+        } catch (Exception e) {
+            return "DB ERROR: " + e.getMessage();
+        }
     }
 }
