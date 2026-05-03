@@ -165,4 +165,11 @@ public class LinkService {
 
         return new LinkStatusResponse("ACTIVE");
     }
+
+    @PostConstruct
+    public void printDbInfo() {
+        log.info("DB URL = {}", System.getenv("SPRING_DATASOURCE_URL"));
+        log.info("DB HOST = {}", System.getenv("MYSQLHOST"));
+        log.info("DB NAME = {}", System.getenv("MYSQLDATABASE"));
+    }
 }

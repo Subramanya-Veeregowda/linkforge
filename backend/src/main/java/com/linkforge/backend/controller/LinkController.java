@@ -85,4 +85,9 @@ public class LinkController {
             return "DB ERROR: " + e.getMessage();
         }
     }
+
+    @GetMapping("/debug-db")
+    public String debugDb() {
+        return linkRepository.findAll().toString();
+    }
 }
