@@ -69,12 +69,13 @@ public class LinkService {
 
         if (request.getCustomAlias() != null && !request.getCustomAlias().isEmpty()) {
             shortCode = request.getCustomAlias();
-            link.setCustomAlias(request.getCustomAlias()); // store it properly
+            link.setCustomAlias(request.getCustomAlias());
         } else {
             shortCode = generateShortCode();
         }
 
         link.setShortCode(shortCode);
+
 
         if (linkRepository.existsByShortCode(shortCode)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Alias already taken");

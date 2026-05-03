@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class CreateLinkRequest {
 
     private String originalUrl;
-    private String customCode;
     private String customAlias;
     private String password;
 
