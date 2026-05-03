@@ -65,11 +65,16 @@ public class LinkService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
         }
 
-        if (request.getCustomCode() != null && !request.getCustomCode().isEmpty()) {
-            shortCode = request.getCustomCode();
+        Link link = new Link;
+
+        if (request.getCustomAlias() != null && !request.getCustomAlias().isEmpty()) {
+            shortCode = request.getCustomAlias();
+            link.setCustomAlias(request.getCustomAlias()); // store it properly
         } else {
             shortCode = generateShortCode();
         }
+
+        link.setShortCode(shortCode);
 
         if (linkRepository.existsByShortCode(shortCode)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Alias already taken");
