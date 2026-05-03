@@ -65,7 +65,11 @@ public class LinkService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
         }
 
+        System.out.println("STEP 1: method entered");
+
         Link link = new Link();
+
+        System.out.println("STEP 2: object created");
 
         if (request.getCustomAlias() != null && !request.getCustomAlias().isEmpty()) {
             shortCode = request.getCustomAlias();
@@ -94,6 +98,8 @@ public class LinkService {
         }
 
         linkRepository.save(link);
+
+        System.out.println("STEP 3: saved");
 
         return baseUrl + "/api/" + shortCode;
     }
