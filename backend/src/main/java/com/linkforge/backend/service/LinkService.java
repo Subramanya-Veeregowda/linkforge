@@ -80,7 +80,6 @@ public class LinkService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Alias already taken");
         }
 
-        Link link = new Link();
         link.setOriginalUrl(request.getOriginalUrl());
         link.setShortCode(shortCode);
         link.setClickCount(0L);
