@@ -65,7 +65,7 @@ public class LinkService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid URL");
         }
 
-        Link link = new Link;
+        Link link = new Link();
 
         if (request.getCustomAlias() != null && !request.getCustomAlias().isEmpty()) {
             shortCode = request.getCustomAlias();
