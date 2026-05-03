@@ -69,12 +69,10 @@ public class LinkService {
 
         if (request.getCustomAlias() != null && !request.getCustomAlias().isEmpty()) {
             shortCode = request.getCustomAlias();
-            link.setCustomAlias(request.getCustomAlias());
+            link.setCustomAlias(request.getCustomAlias()); // store it properly
         } else {
             shortCode = generateShortCode();
         }
-
-        link.setShortCode(shortCode);
 
 
         if (linkRepository.existsByShortCode(shortCode)) {
