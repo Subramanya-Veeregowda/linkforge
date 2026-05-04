@@ -169,7 +169,9 @@ This project is developed in multiple versions to demonstrate system evolution.
 - QR generation
 - Rate limiting
 
-## Release: (add link after release)
+## Release: Version v1
+  v1.0.1 - MVP release -
+  V!.0.2 - MVP release (Stable) - 
 
 ---
 
