@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.time.ZoneId;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -99,7 +100,7 @@ public class LinkService {
         link.setCreatedAt(LocalDateTime.now());
 
         if(request.getExpiryTime() != null){
-            link.setExpiryTime(request.getExpiryTime());
+            link.setExpiryTime(request.getExpiryTime().atZone(ZoneId.of("Asia/Kolkata")).toLocalDateTime());
         }
 
         if(request.getPassword() != null && !request.getPassword().isEmpty()){
@@ -140,7 +141,7 @@ public class LinkService {
 
         // 1. Expiry FIRST
         if (link.getExpiryTime() != null &&
-                link.getExpiryTime().isBefore(LocalDateTime.now())) {
+                link.getExpiryTime().isBefore(LocalDateTime.now(ZoneId.of("Asia/Kolkata")))) {
             throw new ResponseStatusException(HttpStatus.GONE, "Link expired!");
         }
 
@@ -169,7 +170,7 @@ public class LinkService {
                 .orElseThrow(() -> new RuntimeException("Not found"));
 
         if (link.getExpiryTime() != null &&
-                link.getExpiryTime().isBefore(LocalDateTime.now())) {
+                link.getExpiryTime().isBefore(LocalDateTime.now(ZoneId.of("Asia/Kolkata")))) {
             return new LinkStatusResponse("EXPIRED");
         }
 

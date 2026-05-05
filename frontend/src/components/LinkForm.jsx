@@ -72,7 +72,7 @@ const handleSubmit = async () => {
       } else if (data?.message === "Invalid URL") {
         setError("Invalid URL");
       } else {
-        setError("Something went wrong");
+        setError("Something went wrong / Invalid URL / alias already taken");
       }
       setShortUrl(null);
       return;
