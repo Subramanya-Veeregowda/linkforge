@@ -1,10 +1,7 @@
 package com.linkforge.backend.model;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,13 +34,27 @@ import java.time.LocalDateTime;
 
         private LocalDateTime createdAt;
 
+        @Column(nullable = false)
+        private String title;
+
         public LocalDateTime getExpiryTime(){
             return expiryTime;
         }
 
         public String getPasswordHash(){
             return passwordHash;
-       }
+        }
 
+        public String getOriginalUrl(){
+           return originalUrl;
+        }
+
+        public String getTitle(){
+            return title;
+        }
+
+        public void setTitle(String title){
+            this.title = title;
+        }
     }
 

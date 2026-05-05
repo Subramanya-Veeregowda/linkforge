@@ -9,6 +9,7 @@ public class CreateLinkRequest {
     private String customCode;
     private String customAlias;
     private String password;
+    private String title;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm[:ss]")
     private LocalDateTime expiryTime;
@@ -48,4 +49,8 @@ public class CreateLinkRequest {
     public void setExpiryTime(LocalDateTime expiryTime) {
         this.expiryTime = expiryTime;
     }
+
+    public String getTitle(){ return title;}
+
+    public void setTitle(String title){ this.title = title; }
 }

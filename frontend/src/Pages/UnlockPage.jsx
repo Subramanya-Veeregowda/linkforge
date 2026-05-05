@@ -12,7 +12,7 @@ function UnlockPage() {
   const [expired, setExpired] = useState(false);
   const [searchParams] = useSearchParams();
 
-  const API = import.meta.env.VITE_API_BASE_URL;
+  //const API = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if(searchParams.get("error") === "invalid"){
@@ -25,40 +25,44 @@ function UnlockPage() {
   },[]);
 
 const handleUnlock = async () => {
-  try {
-    const res = await fetch(`/api/${shortCode}`, {
-      method: "POST", // or GET with query param depending on backend
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ password }),
-    });
 
+  if(!password){
+    setError("Please enter password");
+    return;
+  }
+
+  try {
+    const API = import.meta.env.VITE_API_BASE_URL;
+
+    const res = await fetch(
+      `${API}/api/${shortCode}?password=${password}`
+    );
+
+    // 🔥 INVALID PASSWORD
     if (res.status === 401) {
-      setError("Wrong password");
+      setError("Invalid password");
       return;
     }
 
+    // 🔥 EXPIRED LINK
     if (res.status === 410) {
       setExpired(true);
       return;
     }
 
-    if (!res.ok) {
-      throw new Error("Something went wrong");
+    // 🔥 SUCCESS → GET URL
+    const url = await res.text();
+
+    if (url) {
+      window.location.href = url;
     }
-
-    const data = await res.text();
-
-    // redirect ONLY after success
-    window.location.href = data;
 
   } catch (err) {
     console.error(err);
+    setError("Something went wrong");
   }
 };
 
-  // Show expired UI
   if (expired) {
     return <ExpiredPopup />;
   }
@@ -76,7 +80,10 @@ const handleUnlock = async () => {
           This link requires a password.
         </p>
 
-        <form onSubmit={handleUnlock}>
+       <form onSubmit={(e) => {
+  e.preventDefault();
+  handleUnlock();
+}}>
           <input
             type="password"
             placeholder="Enter password"

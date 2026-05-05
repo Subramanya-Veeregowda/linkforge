@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -28,6 +29,8 @@ public class LinkService {
 
     private static final Logger log = LoggerFactory.getLogger(LinkService.class);
 
+    private final PasswordEncoder passwordEncoder;
+
     @PostConstruct
     public void validateBaseUrl() {
         if (baseUrl == null || baseUrl.isEmpty()) {
@@ -39,9 +42,10 @@ public class LinkService {
         return link.getPasswordHash() != null && !link.getPasswordHash().isEmpty();
     }
 
-    public LinkService(LinkRepository linkRepository, BCryptPasswordEncoder encoder) {
+    public LinkService(LinkRepository linkRepository, BCryptPasswordEncoder encoder,PasswordEncoder passwordEncoder) {
         this.linkRepository = linkRepository;
         this.encoder = encoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private String generateShortCode() {
@@ -68,6 +72,12 @@ public class LinkService {
         System.out.println("STEP 1: method entered");
 
         Link link = new Link();
+
+        if(request.getTitle() == null || request.getTitle().isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required");
+        }
+
+        link.setTitle(request.getTitle());
 
         System.out.println("STEP 2: object created");
 
@@ -101,7 +111,7 @@ public class LinkService {
 
         System.out.println("STEP 3: saved");
 
-        return baseUrl + "/api/" + shortCode;
+        return shortCode;
     }
 
     private boolean isValidUrl(String url) {
@@ -149,8 +159,8 @@ public class LinkService {
     }
 
     public Link getLink(String shortCode) {
-
         return linkRepository.findByShortCode(shortCode)
+                .or(() -> linkRepository.findByCustomAlias(shortCode))
                 .orElseThrow(() -> new RuntimeException("Link not found"));
     }
 
@@ -175,5 +185,9 @@ public class LinkService {
         log.info("DB URL = {}", System.getenv("SPRING_DATASOURCE_URL"));
         log.info("DB HOST = {}", System.getenv("MYSQLHOST"));
         log.info("DB NAME = {}", System.getenv("MYSQLDATABASE"));
+    }
+
+    public boolean verifyPassword(Link link, String password) {
+        return passwordEncoder.matches(password, link.getPasswordHash());
     }
 }

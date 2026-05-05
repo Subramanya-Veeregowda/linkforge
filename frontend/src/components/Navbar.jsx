@@ -27,11 +27,15 @@ export default function Navbar({ dark, setDark, isLoggedIn }) {
       <div className="hidden md:flex items-center gap-6">
 
         <button title="Coming Soon 🚀" className="text-sm text-gray-800 dark:text-gray-200">
+          Dashboard
+        </button>
+
+        <button title="Coming Soon 🚀" className="text-sm text-gray-800 dark:text-gray-200">
           My Links
         </button>
 
         <button title="Coming Soon 🚀" className="text-sm text-gray-800 dark:text-gray-200">
-          Manage
+          Analytics
         </button>
 
         {/* LOGIN / LOGOUT */}
@@ -72,6 +76,14 @@ export default function Navbar({ dark, setDark, isLoggedIn }) {
             className="text-sm text-gray-800 dark:text-gray-200 hover:scale-[1.03] transition duration-300 ease-in-out"
             title="Coming Soon 🚀"
           >
+            Dashboard
+          </button>
+
+          <button
+            onClick={() => setOpen(false)}
+            className="text-sm text-gray-800 dark:text-gray-200 hover:scale-[1.03] transition duration-300 ease-in-out"
+            title="Coming Soon 🚀"
+          >
             My Links
           </button>
 
@@ -80,7 +92,7 @@ export default function Navbar({ dark, setDark, isLoggedIn }) {
             className="text-sm text-gray-800 dark:text-gray-200 hover:scale-[1.03] transition duration-300 ease-in-out"
             title="Coming Soon 🚀"
           >
-            Manage
+            Analytics
           </button>
 
           {/* LOGIN / LOGOUT */}

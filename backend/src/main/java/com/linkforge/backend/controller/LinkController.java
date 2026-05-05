@@ -32,6 +32,9 @@ public class LinkController {
     @Value("${app.base-url}")
     private String baseUrl;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     public LinkController(LinkService linkService) {
         this.linkService = linkService;
     }
@@ -44,9 +47,15 @@ public class LinkController {
     @PostMapping("/links")
     public LinkResponse createLink(@RequestBody CreateLinkRequest request) {
 
-        String shortUrl = linkService.createShortLink(request);
+        String shortCode = linkService.createShortLink(request);
 
-        return new LinkResponse(shortUrl);
+        String shortUrl = frontendUrl + "/" + shortCode;
+
+        LinkResponse response = new LinkResponse(shortUrl);
+
+        response.setTitle(request.getTitle());
+
+        return response;
     }
 
     @GetMapping("/qr/details/{shortCode}")
@@ -54,7 +63,7 @@ public class LinkController {
 
         Link link = linkService.getLink(shortCode);  // make sure this exists
 
-        String url = baseUrl + "/" + shortCode;
+        String url = frontendUrl + "/" + shortCode;
 
         byte[] qrImage = qrService.generateQR(url);
 
@@ -88,6 +97,7 @@ public class LinkController {
 
     @GetMapping("/debug-db")
     public String debugDb() {
+
         return linkRepository.findAll().toString();
     }
 }

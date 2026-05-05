@@ -10,6 +10,7 @@ export default function LinkForm() {
   const [error,setError] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
 
   const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -29,6 +30,12 @@ useEffect(() => {
 
 const handleSubmit = async () => {
   setError("");
+
+  if(!title || !title.trim()){
+    setError("title is required");
+    return;
+  }
+
   setLoading(true);
 
   console.log("Expiry date:" , expiry)
@@ -40,8 +47,9 @@ const handleSubmit = async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        title: title,
         originalUrl: url,
-        customCode: alias,
+        customAlias: alias,
         expiryTime: expiry ? expiry : null,
         password: password || null,
       }),
@@ -72,9 +80,8 @@ const handleSubmit = async () => {
 
     // ✅ SUCCESS
     if (data?.shortUrl) {
-      const shortCode = data.shortUrl?.split("/").filter(Boolean).pop();
-      const finalUrl = `${API}/api/${shortCode}`;
-      setShortUrl(finalUrl);
+      setShortUrl(data.shortUrl);
+      console.log("BACKEND RESPONSE:", data);
     } else {
       setError("No short URL returned from server");
     }
@@ -87,12 +94,29 @@ const handleSubmit = async () => {
 
   return (
     <div className="w-full px-4 sm:px-6"> {/**added responsiveness for mobile */}
-    <div className="max-w-xl mx-auto mt-3 rounded-xl backdrop-blur bg-white/80 dark:bg-blue-400/30 border border-white/20 shadow-xl p-4 sm:p-6">
+    <div className="max-w-3xl mx-auto mt-3 rounded-xl backdrop-blur bg-white/80 dark:bg-blue-400/30 border border-white/20 shadow-xl p-4 sm:p-6">
 
-      {/* URL INPUT */}
+
+      {/* title INPUT */}
+      <label className="text-sm text-blue-900 dark:text-blue-300 mb-2 block">
+        Give a title <span className="text-red-700 text-xl">*</span>
+      </label>
       <input
         type="text"
-        placeholder="http://example.com/my-very-long-article-link"
+        placeholder="Give your link a title "
+        value={title}
+        onChange={(e) => setTitle(e.target.value)
+        }
+        className="w-full p-3 rounded-lg bg-white dark:bg-blue-100 border border-gray-500 mb-4 placeholder-grey-500 "
+      />
+
+      {/* URL INPUT */}
+      <label className="text-sm text-blue-900 dark:text-blue-300 mb-2 block">
+        Paste your URL <span className="text-red-700 text-xl">*</span>
+      </label>
+      <input
+        type="text"
+        placeholder="http://example.com/your-very-long-url"
         value={url}
         onChange={(e) => { setUrl(e.target.value);
                          setError("");
@@ -102,6 +126,9 @@ const handleSubmit = async () => {
 
 
       {/* CUSTOM ALIAS */}
+      <label className="text-sm text-blue-900 dark:text-blue-300 mb-2 block">
+        Enter Alias/Custom name (optional)
+      </label>
       <input
         type="text"
         placeholder="Custom alias (optional)"
@@ -124,7 +151,7 @@ const handleSubmit = async () => {
      <input
          type="password"
          name="linksecret"
-         placeholder="Password protect link (optional)"
+         placeholder="Encrypt your link with password (optional)"
          autoComplete="new-password"
          value={password}
          onChange={(e)=>setPassword(e.target.value)}
@@ -152,6 +179,10 @@ const handleSubmit = async () => {
       >
         Forge
       </button>
+
+       <label className="text-sm  text-red-700  mb-2 block">
+         <span className="text-red-700 text-xl">*</span> marked are mandatory fields
+      </label>
 
      </div>
 
@@ -210,6 +241,7 @@ const handleSubmit = async () => {
     </p>
   )}
 </div>
+
 
     </div>
         </div>
