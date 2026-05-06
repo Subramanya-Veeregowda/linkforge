@@ -145,8 +145,6 @@ backend/src/main/resources/application-dev.properties
 backend/src/main/resources/application-dev-v1.properties
 backend/src/main/resources/application-dev-v2.properties
 backend/src/main/resources/application-prod-v2.properties
-backend/src/main/resources/application.properties
-backend/src/main/resources/application-prod-v1.properties
 
-backend/src/main/resources/application-prod-v1.properties
-backend/src/main/resources/application.properties
+application-prod-v1.properties
+application.properties
