@@ -76,7 +76,7 @@ export default function Footer() {
         {/* LEFT */}
         <div className="flex items-center gap-4 font-bold">
           <span>© 2026 LinkForge</span>
-          <span className="text-xs opacity-70">v1.0.1</span>
+          <span className="text-xs opacity-70">v2.0.1</span>
           <FaGooglePlay className="text-lg cursor-pointer hover:text-blue-500 hover:scale-125 transition duration-300 ease-in-out" />
         </div>
 

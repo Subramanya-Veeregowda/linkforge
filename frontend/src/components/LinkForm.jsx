@@ -160,7 +160,7 @@ const handleSubmit = async () => {
 
     <div className="w-full mb-3">
       <label className="text-sm text-blue-900 dark:text-blue-300 mb-2 block">
-        Expiry date & time (optional)
+        Expiry date & time - UTC Asia/Kolkata (optional)
       </label>
 
       {/* EXPIRY */}

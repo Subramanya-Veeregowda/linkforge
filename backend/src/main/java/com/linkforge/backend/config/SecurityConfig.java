@@ -1,5 +1,6 @@
 package com.linkforge.backend.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +16,11 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public RateLimitFilter rateLimitFilter(){
-        return new RateLimitFilter();
-    }
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Autowired
+    private RateLimitFilter rateLimitFilter;
 
     @Bean
     public BCryptPasswordEncoder encoder() {
@@ -30,10 +32,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                .addFilterBefore(new RateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register",
+                                "/api/password/forgot", "/api/password/reset").permitAll()
+                        .anyRequest().authenticated()
                 );
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
