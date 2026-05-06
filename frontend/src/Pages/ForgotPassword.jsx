@@ -9,12 +9,14 @@ export default function ForgotPassword() {
 
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_APP_BASE_URL;
+
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
 
   try {
-    await fetch("http://localhost:8080/api/password/forgot", {
+    await fetch(`${API}/api/password/forgot`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
